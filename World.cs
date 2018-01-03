@@ -27,6 +27,10 @@ namespace Basics
             this.GenerateTile(new Position());
         }
 
+        public void FullGeneration()
+        {
+            while (this.GeneratedTiles.Count < this.TargetGenerationSize) { this.GenerationStep(); }
+        }
         public void GenerationStep()
         {
             this.TileSelectedForGenerationLastStep = null;

@@ -11,7 +11,7 @@ namespace Basics
 {
     public partial class Form1 : Form
     {
-        World world;
+        World world = new World();
         bool mouseDown = false;
         Point mouseDownPoint;
         Point mouseDownCameraPoint;
@@ -94,6 +94,15 @@ namespace Basics
             if (this.world != null)
             {
                 this.world.GenerationStep();
+                this.Invalidate();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (this.world != null)
+            {
+                this.world.FullGeneration();
                 this.Invalidate();
             }
         }
