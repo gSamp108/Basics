@@ -9,16 +9,16 @@ using System.Windows.Forms;
 
 namespace Basics
 {
-    public partial class Form1 : Form
+    public partial class formGenerationTest : Form
     {
-        World world = new World();
+        WorldGeneration worldGeneration = new WorldGeneration();
         bool mouseDown = false;
         Point mouseDownPoint;
         Point mouseDownCameraPoint;
         Point cameraPosition;
         int tileRenderSize = 16;
 
-        public Form1()
+        public formGenerationTest()
         {
             InitializeComponent();
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
@@ -44,13 +44,13 @@ namespace Basics
             var canvasCenter = new Point(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2);
             var renderOrigin = new Point(canvasCenter.X + this.cameraPosition.X, canvasCenter.Y + this.cameraPosition.Y);
 
-            if (this.world != null)
+            if (this.worldGeneration != null)
             {
-                foreach (var tile in this.world.Tiles.Values)
+                foreach (var tile in this.worldGeneration.Tiles.Values)
                 {
-                    if (this.checkBox2.Checked && this.world.UngeneratedTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Red, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
-                    if (this.checkBox3.Checked && this.world.GeneratableTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Yellow, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
-                    if (this.checkBox4.Checked && this.world.GeneratedTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Green, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
+                    if (this.checkBox2.Checked && this.worldGeneration.UngeneratedTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Red, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
+                    if (this.checkBox3.Checked && this.worldGeneration.GeneratableTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Yellow, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
+                    if (this.checkBox4.Checked && this.worldGeneration.GeneratedTiles.Contains(tile)) e.Graphics.FillRectangle(Brushes.Green, new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize - 1, this.tileRenderSize - 1));
                     if (this.checkBox5.Checked) e.Graphics.DrawString(tile.GenerationWeight.ToString(), this.Font, Brushes.Black, new PointF(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize)));
 
 
@@ -85,24 +85,24 @@ namespace Basics
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.world = new World();
+            this.worldGeneration = new WorldGeneration();
             this.Invalidate();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (this.world != null)
+            if (this.worldGeneration != null)
             {
-                this.world.GenerationStep();
+                this.worldGeneration.GenerationStep();
                 this.Invalidate();
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (this.world != null)
+            if (this.worldGeneration != null)
             {
-                this.world.FullGeneration();
+                this.worldGeneration.FullGeneration();
                 this.Invalidate();
             }
         }

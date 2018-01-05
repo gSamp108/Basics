@@ -1,6 +1,6 @@
 ﻿namespace Basics
 {
-    partial class Form1
+    partial class formGenerationTest
     {
         /// <summary>
         /// Required designer variable.

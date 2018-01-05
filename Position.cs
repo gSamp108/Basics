@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Basics
 {
-    class Position
+    public struct Position
     {
         public int X;
         public int Y;
@@ -28,7 +28,6 @@ namespace Basics
         {
             return "(" + this.X + ", " + this.Y + ")";
         }
-        public Position() : this(0, 0) { }
         public Position(int x, int y) { this.X = x; this.Y = y; }
     }
 }
