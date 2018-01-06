@@ -15,7 +15,7 @@ namespace Basics
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new formGenerationTest());
+            Application.Run(new formWorldView());
         }
     }
 }

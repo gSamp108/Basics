@@ -10,6 +10,10 @@ namespace Basics
         public static int FromRange(this Random rng, Range range)
         {
             return rng.Next((range.Max + 1) - range.Min) + range.Min;
-        }    
+        }
+        public static decimal Percentage(this Random rng)
+        {
+            return ((decimal)rng.NextDouble());
+        }
     }
 }

@@ -7,15 +7,6 @@ namespace Basics
 {
     public class World
     {
-        public class Resources
-        {
-            public Range Organics { get; set; }
-            public Range Metallics { get; set; }
-            public Range Conductives { get; set; }
-            public Range Combustables { get; set; }
-            public Range Chemicals { get; set; }
-        }
-
         public Random Rng { get; private set; }
         public Tile this[Position position]
         {
@@ -26,11 +17,14 @@ namespace Basics
             }
         }
         private Dictionary<Position, Tile> tiles = new Dictionary<Position, Tile>();
-        public Resources ResourceSpawnRate { get; private set; }
-        public Resources ResourceSpawnDensitiy { get; private set; }
+        public decimal MineralNodeSpawnChance { get; private set; }
+        public IEnumerable<Tile> Tiles { get { foreach (var tile in this.tiles.Values) { yield return tile; } } }
 
         public World(WorldGeneration worldGeneration)
         {
+            this.Rng = new Random();
+            this.tiles = new Dictionary<Position, Tile>();
+            this.MineralNodeSpawnChance = 0.01m;
             foreach (var generatedTile in worldGeneration.GeneratedTiles)
             {
                 var tile = new Tile(this, generatedTile.Position);
