@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Basics
 {
-    public class Structure
+    public enum TokenTypes
     {
+        Extractor,
+        Manufacturer,
+        Unit,
     }
 }

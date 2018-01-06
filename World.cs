@@ -19,7 +19,8 @@ namespace Basics
         private Dictionary<Position, Tile> tiles = new Dictionary<Position, Tile>();
         public decimal MineralNodeSpawnChance { get; private set; }
         public IEnumerable<Tile> Tiles { get { foreach (var tile in this.tiles.Values) { yield return tile; } } }
-
+        public List<Token> Tokens { get; private set; }
+        public List<Group> Grousp
         public World(WorldGeneration worldGeneration)
         {
             this.Rng = new Random();
