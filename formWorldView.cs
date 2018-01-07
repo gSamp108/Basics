@@ -15,15 +15,17 @@ namespace Basics
         Point mouseDownPoint;
         Point mouseDownCameraPoint;
         Point cameraPosition;
-        int tileRenderSize = 4;
+        int tileRenderSize = 8;
         World world;
+        Dictionary<Group, Color> groupRenderColors = new Dictionary<Group, Color>();
+        Random rng = new Random();
 
         public formWorldView()
         {
             this.InitializeComponent();
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             var generation = new WorldGeneration();
-            generation.TargetGenerationSize = 10000;
+            generation.TargetGenerationSize = 1000;
             generation.FullGeneration();
             this.world = new World(generation);
         }
@@ -37,13 +39,31 @@ namespace Basics
 
             if (this.world != null)
             {
-                foreach (var tile in this.world.Tiles)
+                using (var brush = new SolidBrush(Color.Black))
                 {
-                    var tileRenderRectangle = new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize, this.tileRenderSize);
-                    if (tile.MineralNode) e.Graphics.FillRectangle(Brushes.Green, tileRenderRectangle);
-                    e.Graphics.DrawRectangle(Pens.Black, tileRenderRectangle);
+                    foreach (var tile in this.world.Tiles)
+                    {
+                        var tileRenderRectangle = new Rectangle(renderOrigin.X + (tile.Position.X * this.tileRenderSize), renderOrigin.Y + (tile.Position.Y * this.tileRenderSize), this.tileRenderSize, this.tileRenderSize);
+                        if (tile.MineralNode) e.Graphics.FillRectangle(Brushes.Green, tileRenderRectangle);
+                        e.Graphics.DrawRectangle(Pens.Black, tileRenderRectangle);
+
+                        if (tile.UnitLayer != null)
+                        {
+                            brush.Color = this.GetGroupColor(tile.UnitLayer.Group);
+                            var widthShift = tileRenderRectangle.Width / 2;
+                            var heightShift = tileRenderRectangle.Height / 2;
+                            e.Graphics.FillRectangle(brush, new Rectangle(tileRenderRectangle.X + (widthShift / 2), tileRenderRectangle.Y + (heightShift / 2), tileRenderRectangle.Width - widthShift, tileRenderRectangle.Height - heightShift));
+                            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(tileRenderRectangle.X + (widthShift / 2), tileRenderRectangle.Y + (heightShift / 2), tileRenderRectangle.Width - widthShift, tileRenderRectangle.Height - heightShift));
+                        }
+                    }
                 }
             }
+        }
+
+        private Color GetGroupColor(Group group)
+        {
+            if (!this.groupRenderColors.ContainsKey(group)) this.groupRenderColors.Add(group, Color.FromArgb(this.rng.Next(256), this.rng.Next(256), this.rng.Next(256)));
+            return this.groupRenderColors[group];
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
