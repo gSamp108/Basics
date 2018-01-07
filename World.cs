@@ -7,6 +7,8 @@ namespace Basics
 {
     public class World
     {
+        public enum Phases { Start, ResourceGeneration, Planning, ResourceAllocation, Movement, Combat, End }
+
         public Random Rng { get; private set; }
         public Tile this[Position position]
         {
@@ -24,6 +26,7 @@ namespace Basics
         public decimal GroupSpawnChance { get; private set; }
         public int MineralSpawnRadius { get; private set; }
         public decimal MineralSpawnChance { get; private set; }
+        public Phases CurrentPhase { get; private set; }
 
         public World(WorldGeneration worldGeneration)
         {
@@ -35,6 +38,63 @@ namespace Basics
             }
             this.SpawnMinerals();
             this.SpawnGroups();
+        }
+
+        public void Tick()
+        {
+            if (this.CurrentPhase == Phases.Start) this.StartPhaseTick();
+            else if (this.CurrentPhase == Phases.ResourceGeneration) this.ResourceGenerationPhaseTick();
+            else if (this.CurrentPhase == Phases.Planning) this.PlanningPhaseTick();
+            else if (this.CurrentPhase == Phases.ResourceAllocation) this.ResourceAllocationPhaseTick();
+            else if (this.CurrentPhase == Phases.Movement) this.MovementPhaseTick();
+            else if (this.CurrentPhase == Phases.Combat) this.CombatPhaseTick();
+            else if (this.CurrentPhase == Phases.End) this.EndPhaseTick();
+
+
+            var groupTickOrder = this.Groups.OrderBy(o => o.TickOrder).ToList();
+            this.PlanningPhaseTick();
+        }
+
+        private void StartPhaseTick()
+        {
+            foreach (var group in this.Groups)
+            {
+                group.StartPhaseTick();
+            }
+            foreach (var token in this.Tokens)
+            {
+                token.StartPhaseTick();
+            }
+            this.CurrentPhase = Phases.ResourceAllocation;
+        }
+        private void ResourceGenerationPhaseTick()
+        {
+            foreach (var token in this.Tokens.Where(o => o.Type == TokenTypes.Extractor))
+            {
+                var minerals = token.Ability;
+                token.Group.CurrentTickMineralIncome += minerals;
+            }
+            this.CurrentPhase = Phases.Planning;
+        }
+        private void PlanningPhaseTick()
+        {
+            this.CurrentPhase = Phases.ResourceAllocation;
+        }
+        private void ResourceAllocationPhaseTick()
+        {
+            this.CurrentPhase = Phases.Movement;
+        }
+        private void MovementPhaseTick()
+        {
+            this.CurrentPhase = Phases.Combat;
+        }
+        private void CombatPhaseTick()
+        {
+            this.CurrentPhase = Phases.End;
+        }
+        private void EndPhaseTick()
+        {
+            this.CurrentPhase = Phases.Start;
         }
 
         private void SpawnMinerals()
@@ -50,7 +110,6 @@ namespace Basics
                 if (this.Rng.Percentage() < this.MineralSpawnChance) this[tile].SpawnMineralNode();
             }
         }
-
         private void Initialize()
         {
             this.GroupSpawnRadius = 10;
@@ -61,8 +120,8 @@ namespace Basics
             this.Groups = new List<Group>();
             this.Rng = new Random();
             this.tiles = new Dictionary<Position, Tile>();
+            this.CurrentPhase = Phases.Start;
         }
-
         private void SpawnGroups()
         {
             var open = new HashSet<Position>(this.tiles.Keys);
@@ -82,7 +141,6 @@ namespace Basics
                 }
             }            
         }
-
         private void AddToken(Token token)
         {
             this.Tokens.Add(token);
@@ -90,10 +148,10 @@ namespace Basics
             var tile = this[token.Position];
             tile.AddToken(token);
         }
-
         private void AddGroup(Group group)
         {
             this.Groups.Add(group);
+            group.TickOrder = this.Groups.Count;
         }
     }
 }
